@@ -1,12 +1,12 @@
 #pragma once
 
-
 #include "./byte_swap.h"
 #include "./endian_swap.h"
 
 #include <concepts>
 #include <type_traits>
 #include <bit>
+#include <utility>
 
 
 namespace bcpp
