@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./non_copyable.h"
+
 #include <concepts>
 #include <cstddef>
 #include <vector>
@@ -14,7 +16,6 @@ namespace bcpp
     public:
 
         using type = T;
-
 
         spsc_fixed_queue
         (
@@ -32,9 +33,10 @@ namespace bcpp
             type &
         );
 
+        template <typename T_>
         bool push
         (
-            T &&
+            T_ &&
         );
 
         bool empty() const;
@@ -117,14 +119,15 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::try_pop
 
 //==============================================================================
 template <typename T>
+template <typename T_>
 inline bool bcpp::spsc_fixed_queue<T>::push
 (
-    T && value
+    T_ && value
 )
 {
     if (std::size_t back = back_; (back - front_) < capacity_)
     {
-        queue_[back++ & capacityMask_] = std::forward<T>(value);
+        queue_[back++ & capacityMask_] = std::forward<T_>(value);
         back_ = back;
         return true;
     }
