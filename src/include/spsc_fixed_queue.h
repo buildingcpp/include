@@ -28,6 +28,11 @@ namespace bcpp
 
         type pop();
 
+        std::size_t pop
+        (
+            type &
+        );
+
         std::size_t try_pop
         (
             type &
@@ -97,6 +102,21 @@ inline auto bcpp::spsc_fixed_queue<T>::pop
     type ret = std::move(queue_[front++ & capacityMask_]);
     front_ = front;
     return ret;
+}
+
+
+//==============================================================================
+template <typename T>
+inline std::size_t bcpp::spsc_fixed_queue<T>::pop
+(
+    type & value
+)
+{
+    auto front = front_;
+    auto size = (back_ - front);
+    value = std::move(queue_[front++ & capacityMask_]);
+    front_ = front;
+    return size;
 }
 
 
