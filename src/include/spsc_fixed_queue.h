@@ -43,6 +43,10 @@ namespace bcpp
             T &
         );
 
+        T const & front() const;
+        
+        T & front();
+
         bool empty() const;
 
         std::size_t capacity() const;
@@ -88,6 +92,26 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::capacity
 ) const
 {
     return capacity_;
+}
+
+
+//==============================================================================
+template <typename T>
+T & bcpp::spsc_fixed_queue<T>::front
+(
+)
+{
+    return queue_[front & capacityMask_];
+}
+
+
+//==============================================================================
+template <typename T>
+T const & bcpp::spsc_fixed_queue<T>::front
+(
+) const
+{
+    return queue_[front & capacityMask_];
 }
 
 
