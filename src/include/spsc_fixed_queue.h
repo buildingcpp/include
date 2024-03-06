@@ -54,6 +54,8 @@ namespace bcpp
 
         std::size_t size() const;
 
+        std::size_t discard();
+
     private:
 
         std::size_t volatile        front_;
@@ -102,7 +104,7 @@ T & bcpp::spsc_fixed_queue<T>::front
 (
 )
 {
-    return queue_[front & capacityMask_];
+    return queue_[front_ & capacityMask_];
 }
 
 
@@ -126,6 +128,17 @@ inline auto bcpp::spsc_fixed_queue<T>::pop
     type ret = std::move(queue_[front++ & capacityMask_]);
     front_ = front;
     return ret;
+}
+
+
+//==============================================================================
+template <typename T>
+inline std::size_t bcpp::spsc_fixed_queue<T>::discard
+(
+)
+{
+    front_ = front_ + 1;
+    return (back_ - front_);
 }
 
 
