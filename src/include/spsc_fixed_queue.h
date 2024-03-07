@@ -44,6 +44,12 @@ namespace bcpp
             T_ &&
         );
 
+        template <typename ... Ts>
+        bool emplace
+        (
+            Ts && ...
+        );
+
         T const & front() const;
         
         T & front();
@@ -171,6 +177,24 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::try_pop
         return size;
     }
     return 0;
+}
+
+
+//==============================================================================
+template <typename T>
+template <typename ... Ts>
+inline bool bcpp::spsc_fixed_queue<T>::emplace
+(
+    Ts && ... args
+)
+{
+    if (std::size_t back = back_; (back - front_) < capacity_)
+    {
+        queue_[back++ & capacityMask_] = T(std::forward<Ts>(args) ...);
+        back_ = back;
+        return true;
+    }
+    return false;
 }
 
 
