@@ -14,15 +14,14 @@ namespace bcpp
     struct constexpr_string
     {
         using element_type = char;
-        static auto constexpr size = N;
-        using value_type = element_type[size];
+        using value_type = element_type[N];
 
         constexpr constexpr_string
         (
             element_type const (&value)[N]
         ) noexcept
         {
-            std::copy_n(value, size, value_);
+            std::copy_n(value, N, value_);
         }
 
         constexpr value_type const & get() const noexcept;
@@ -31,13 +30,15 @@ namespace bcpp
 
         constexpr operator std::string_view const() const noexcept;
 
+        static auto constexpr size() noexcept {return N;}
+
         value_type value_;
     };
 
 
     //=========================================================================
     template <typename T>
-    concept constexpr_string_concept = std::is_same_v<T, constexpr_string<T::size>>;
+    concept constexpr_string_concept = std::is_same_v<T, constexpr_string<T::size()>>;
 
 } // namespace bcpp
 
