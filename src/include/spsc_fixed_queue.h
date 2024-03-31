@@ -16,6 +16,7 @@ namespace bcpp
     public:
 
         using type = T;
+        using value_type = T;
 
         spsc_fixed_queue
         (
