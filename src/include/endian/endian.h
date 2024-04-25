@@ -45,12 +45,12 @@ namespace bcpp
         endian
         (
             endian const &
-        );
+        ) = default;
 
         endian
         (
             endian &&
-        );
+        ) = default;
 
         endian
         (
@@ -60,12 +60,12 @@ namespace bcpp
         endian & operator =
         (
             endian const &
-        );
+        ) = default;
 
         endian & operator =
         (
             endian &&
-        );
+        ) = default;
 
         endian & operator =
         (
@@ -179,56 +179,10 @@ bcpp::endian<data_type, endian_type>::endian
 template <typename data_type, std::endian endian_type>
 bcpp::endian<data_type, endian_type>::endian
 (
-    endian && input
-):
-    value_(input.value_)
-{
-}
-
-
-//==============================================================================
-template <typename data_type, std::endian endian_type>
-bcpp::endian<data_type, endian_type>::endian
-(
-    endian const & input
-):
-    value_(input.value_)
-{
-}
-
-
-//==============================================================================
-template <typename data_type, std::endian endian_type>
-bcpp::endian<data_type, endian_type>::endian
-(
     data_type const & input
 )
 {
     value_ = endian_swap<std::endian::native, endian_type>(input);
-}
-
-
-//==============================================================================
-template <typename data_type, std::endian endian_type>
-auto bcpp::endian<data_type, endian_type>::operator =
-(
-    endian const & input
-) -> endian &
-{
-    value_ = input.value_;
-    return *this;
-}
-
-
-//==============================================================================
-template <typename data_type, std::endian endian_type>
-auto bcpp::endian<data_type, endian_type>::operator =
-(
-    endian && input
-) -> endian &
-{
-    value_ = input.value_;
-    return *this;
 }
 
 
