@@ -144,6 +144,7 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::discard
 (
 )
 {
+    queue_[front_ & capacityMask_] = {};
     front_ = front_ + 1;
     return (back_ - front_);
 }
