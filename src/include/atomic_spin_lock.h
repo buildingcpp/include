@@ -5,7 +5,7 @@
 #include <thread>
 #include <atomic>
 #include <cstdint>
-
+#include <emmintrin.h>
 
 
 namespace bcpp
@@ -19,13 +19,7 @@ namespace bcpp
         using value_type = std::thread::id;
 
         atomic_spin_lock() = default;
-        atomic_spin_lock
-        (
-            value_type
-        );
-        
-        ~atomic_spin_lock();
-
+        ~atomic_spin_lock() = default;
         atomic_spin_lock(atomic_spin_lock &&) = default;
         atomic_spin_lock & operator = (atomic_spin_lock &&) = default;
 
@@ -34,7 +28,6 @@ namespace bcpp
         void unlock();
 
         bool try_lock();
-
 
     private:
 
@@ -46,27 +39,6 @@ namespace bcpp
 
 
 //=============================================================================
-inline bcpp::atomic_spin_lock::atomic_spin_lock
-(
-    value_type value
-):
-    value_(value)
-{
-}
-
-
-//=============================================================================
-inline bcpp::atomic_spin_lock::~atomic_spin_lock
-(
-)
-{
-    static value_type const invalid_value = {};
-    auto expected = std::this_thread::get_id();
-    value_.compare_exchange_strong(expected, invalid_value);
-}
-
-
-//=============================================================================
 inline void bcpp::atomic_spin_lock::lock
 (
 )
@@ -75,7 +47,7 @@ inline void bcpp::atomic_spin_lock::lock
     auto expected = invalid_value;
     auto desired = std::this_thread::get_id();
     while (not value_.compare_exchange_strong(expected, desired))
-        ;
+        _mm_pause();
 }
 
 
