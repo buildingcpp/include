@@ -182,7 +182,7 @@ bcpp::endian<data_type, endian_type>::endian
     data_type const & input
 )
 {
-    value_ = endian_swap<std::endian::native, endian_type>(input);
+    value_ = endian_swap<std::endian::native, endian_type>(underlying_type(input));
 }
 
 
@@ -193,7 +193,7 @@ auto bcpp::endian<data_type, endian_type>::operator =
     data_type const & input
 ) -> endian &
 {
-    value_ = endian_swap<std::endian::native, endian_type>(input);
+    value_ = endian_swap<std::endian::native, endian_type>(underlying_type(input));
     return *this;
 }
 
