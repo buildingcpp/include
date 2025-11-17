@@ -5,6 +5,7 @@
 #include <concepts>
 #include <cstddef>
 #include <vector>
+#include <atomic>
 
 
 namespace bcpp
@@ -65,9 +66,9 @@ namespace bcpp
 
     private:
 
-        std::size_t volatile        front_;
+        std::atomic<std::size_t>        front_;
 
-        std::size_t volatile        back_;
+        std::atomic<std::size_t>         back_;
 
         std::size_t                 capacity_;
         std::size_t                 capacityMask_;
@@ -131,7 +132,8 @@ inline auto bcpp::spsc_fixed_queue<T>::pop
 (
 ) -> type
 {
-    std::size_t front = front_;
+    auto front = front_.load();
+
     type ret = std::move(queue_[front++ & capacityMask_]);
     front_ = front;
     return ret;
@@ -144,9 +146,12 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::discard
 (
 )
 {
-    queue_[front_ & capacityMask_] = {};
-    front_ = front_ + 1;
-    return (back_ - front_);
+    auto front = front_.load();
+    auto back = back_.load();
+
+    queue_[front++ & capacityMask_] = {};
+    front_ = front;
+    return (back - front);
 }
 
 
@@ -157,8 +162,10 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::pop
     type & value
 )
 {
-    auto front = front_;
-    auto size = (back_ - front);
+    auto front = front_.load();
+    auto back = back_.load();
+
+    auto size = (back - front);
     value = std::move(queue_[front++ & capacityMask_]);
     front_ = front;
     return size;
@@ -172,7 +179,9 @@ inline std::size_t bcpp::spsc_fixed_queue<T>::try_pop
     type & value
 )
 {
-    if (auto front = front_, size = (back_ - front); size > 0)
+    auto front = front_.load();
+    auto back = back_.load();
+    if (auto size = (back - front); size > 0)
     {
         value = std::move(queue_[front++ & capacityMask_]);
         front_ = front;
@@ -190,7 +199,9 @@ inline bool bcpp::spsc_fixed_queue<T>::emplace
     Ts && ... args
 )
 {
-    if (std::size_t back = back_; (back - front_) < capacity_)
+    auto front = front_.load();
+    auto back = back_.load();
+    if ((back - front) < capacity_)
     {
         queue_[back++ & capacityMask_] = T(std::forward<Ts>(args) ...);
         back_ = back;
@@ -208,7 +219,9 @@ inline bool bcpp::spsc_fixed_queue<T>::push
     T_ && value
 )
 {
-    if (std::size_t back = back_; (back - front_) < capacity_)
+    auto front = front_.load();
+    auto back = back_.load();
+    if ((back - front) < capacity_)
     {
         queue_[back++ & capacityMask_] = std::forward<T_>(value);
         back_ = back;
