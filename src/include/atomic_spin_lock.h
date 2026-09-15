@@ -47,7 +47,10 @@ inline void bcpp::atomic_spin_lock::lock
     auto expected = invalid_value;
     auto desired = std::this_thread::get_id();
     while (not value_.compare_exchange_strong(expected, desired))
+    {
+        expected = invalid_value;
         _mm_pause();
+    }
 }
 
 

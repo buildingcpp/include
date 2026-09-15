@@ -4,7 +4,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(PROJECT_NAME include)
 project(${PROJECT_NAME})
 
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(CTest)
+endif()
+
 set(_${PROJECT_NAME}_dir ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "")
 
 add_subdirectory(src)
-
